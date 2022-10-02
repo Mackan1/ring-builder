@@ -1,0 +1,23 @@
+<div class="collection-filter__container">
+{% for block in section.blocks %}
+    {% if block.type == 'filter' %}
+        {% assign block_settings = block.settings %}
+        {% assign filter_img = block_settings.filter_img %}
+        {% assign filter_name = block_settings.filter_name %}
+        {% assign filter_tag = block_settings.filter_tag %}
+
+        <div onclick="filterProducts('{{ filter_tag }}')" class="collection-filter__item">
+            <img src="{{ filter_img | img_url: 'master' }}" />
+            <span>{{ filter_name }}</span>
+        </div>
+    {% endif %}
+{% endfor %}
+</div>
+
+<script>
+function filterProducts(tag) {
+    const updatedTag = tag.toLowerCase().replace(' ', '-')
+
+    window.location.href = '{{ collection.url }}' + '/' + updatedTag
+}
+</script>

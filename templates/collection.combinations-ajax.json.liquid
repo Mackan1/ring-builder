@@ -1,0 +1,35 @@
+{% layout none %}
+
+[
+{% paginate collections['combinations'].all_products by 1000 %}
+    {%- for product in collections['combinations'].all_products -%}
+        {
+            "title":"{{ product.title }}",
+            "handle":"{{ product.handle }}",
+            "description": {{ product.description | json }},
+            "tags":"{{product.tags}}",
+            "price":"{{product.price | money_without_trailing_zeros}}",
+            "available": {{product.available }},
+            "variants": [ 
+            {%- for variant in product.variants -%}
+            {
+                "id":{{variant.id | json}},
+                "title":{{variant.title | json}},
+                "option1": "{{variant.option1}}",
+                "option2": "{{variant.option2}}",
+                "featured_image": {
+                   "src": {{variant.featured_image.src | json }}
+                    },  
+                "name": {{variant.name | json }},
+                "options": {{variant.options | json}},
+                "price": "{{variant.price | money_without_trailing_zeros}}"
+            }{% unless forloop.last %},{% endunless %}
+            {%- endfor -%}
+            ],
+            "images": {{product.images | json}} ,
+            "options": {{product.options | json }}
+        }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+{% endpaginate %}
+]
+

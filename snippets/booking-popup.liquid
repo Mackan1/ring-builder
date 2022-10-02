@@ -1,0 +1,140 @@
+{% assign blocks = section.blocks %}
+{% comment %} {% assign section_settings = section.settings %} {% endcomment %}
+{% assign popup_title = section_settings.popup_title %}
+{% assign popup_subtitle = section_settings.popup_subtitle %}
+{% assign popup_info_text = section_settings.popup_info_text %}
+{% assign location_label = section_settings.location_label %}
+{% assign request_label = section_settings.request_label %}
+{% assign name_label = section_settings.name_label %}
+{% assign email_label = section_settings.email_label %}
+{% assign comment_label = section_settings.comment_label %}
+{% assign footer_link = section_settings.footer_link %}
+{% assign footer_cta = section_settings.footer_cta %}
+{% assign submit_cta = section_settings.submit_cta %}
+{% assign phone_label = section_settings.phone_label %}
+{% assign error_msg = section_settings.error_msg %}
+{% assign success_msg = section_settings.success_msg %}
+
+<div class="booking-popup hide">
+    <div onclick="closePopupUp(event)" class="booking-popup__overlay"></div>
+    <div class="booking-popup__container">
+        <span onclick="closePopupUp(event)" class="booking-popup__close-btn">X</span>
+        <div class="booking-popup__info_container">
+            <h2>{{ popup_title }}</h2>
+            <h5>{{ popup_subtitle }}</h5>
+            <p>{{ popup_info_text }}</p>        
+        </div>
+
+        <div class="booking-form Form">
+            <div class="Form__Item">
+                <label class="Form__FloatingLabel">{{ location_label }}</label>
+                <div class="booking-form__options">
+                    {% for block in blocks %}
+                        {% if block.type == 'locations' %}
+                        <div>
+                            <input class="checkbox-location" value="{{ block.settings.location }}" onchange="updateAppointment(event, 'location')" type="checkbox" />
+                            <label>{{ block.settings.location }}</label>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="Form__Item">
+                <label class="Form__FloatingLabel">{{ request_label }}</label>
+                <div>
+                    {% for block in blocks %}
+                        {% if block.type == 'requests' %}
+                        <div>
+                            <input class="checkbox-request" value="{{ block.settings.request }}" onchange="updateAppointment(event, 'request')" type="checkbox" />
+                            <label>{{ block.settings.request }}</label>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="Form__Item">
+                <input onchange="updateAppointment(event, 'name')" class="Form__Input" type="name" placeholder="{{ name_label }}" /> 
+                <label class="Form__FloatingLabel">{{ name_label }}</label>
+            </div>
+            
+            <div class="Form__Item">
+                <input onchange="updateAppointment(event, 'email')" class="Form__Input" type="email" placeholder="{{ email_label }}" /> 
+                <label class="Form__FloatingLabel">{{ email_label }}</label>
+            </div>
+
+            <div class="Form__Item">
+                <input placeholder="e.g. +45 XX XX XX XX" id="phone" onchange="updateAppointment(event, 'phone')" class="Form__Input" type="tel" placeholder="{{ phone_label }}" /> 
+                <label class="Form__FloatingLabel">{{ phone_label }}</label>
+            </div>
+
+            <div class="Form__Item">
+                <textarea onchange="updateAppointment(event, 'comment')" rows="7" class="Form__Textarea" placeholder="{{ comment_label }}"></textarea >
+                <label class="Form__FloatingLabel">{{ comment_label }}</label>
+            </div>
+
+            
+            <p class="booking-form__error-msg hide">{{ error_msg }}</p>
+            <p class="booking-form__success-msg hide">{{ success_msg }}</p>
+            <button onclick="submitForm(event)" class="booking-form__submit-cta">{{ submit_cta }}</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function closePopupUp(e) {
+    document.querySelector('.booking-popup').classList.toggle('hide')
+    document.querySelector('body').classList.toggle('overflow--hidden')
+}
+
+const appointmentObj = {
+    location: '',
+    request: '',
+    name: '',
+    email: '',
+    phone: '',
+    comment: ''
+}
+
+function submitForm(e) {
+    e.preventDefault()
+    let errors = false
+    
+    Object.keys(appointmentObj).map(function(key) {
+        if(!appointmentObj[key] && key != 'comment') {
+            errors = true
+            document.querySelector('.booking-form__error-msg').classList.remove('hide')
+        }
+    })
+
+    if(!errors) {
+        document.querySelector('.booking-form__error-msg').classList.add('hide')
+        
+        let request = new XMLHttpRequest()
+        request.open('POST', 'https://nuitetlinette-forms-c7kbumhk4q-uc.a.run.app/booking', true)
+        request.setRequestHeader('Content-Type', 'application/json')
+        request.send(JSON.stringify(appointmentObj))
+        document.querySelector('.booking-form__success-msg').classList.toggle('hide')
+    }
+}
+
+function updateAppointment(e, type) {
+    let target = e.target
+    let container = e.target
+    let val = e.target.value
+
+    if(target.type == 'checkbox') {
+        const allContainers = Array.prototype.slice.call(document.querySelectorAll('.checkbox-' + type))
+
+        allContainers.map(function(el) {
+            if(el != target) {
+                el.checked = false
+            }
+        })
+    }
+    
+
+    appointmentObj[type] = val
+}
+</script>

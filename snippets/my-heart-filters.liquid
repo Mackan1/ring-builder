@@ -1,0 +1,25 @@
+{% assign cuts_arr = 'Round Brilliant,Oval,Emerald,Pear,Marquise,Cushion,Princess,Radiant' | split: ',' %}
+{% assign cuts_arr_handle = cuts_arr | downcase | replace: ' ', '-' %}
+{% assign tag_links = '' %}
+
+{%- for tag in collection.all_tags -%}
+  {% assign tag_handle = tag | handle %}
+
+  {% if cuts_arr_handle contains tag_handle %}
+    {% capture tag_links %}
+      {{ tag_links }}
+
+      <button data-action="toggle-tag" data-tag="{{ tag | handle }}" class="{% if current_tags contains tag %}is-active{% endif %}">
+        <img src="{{- tag | handle | append: '.svg' | asset_url -}}" alt="{{ tag }}">
+
+        <span>{{ tag }}</span>
+      </button>
+    {% endcapture %}
+  {% endif %}
+{%- endfor -%}
+
+{% if tag_links != '' %}
+  <div class="my-heart-filters">
+    {{ tag_links }}
+  </div><!-- /.my-heart-filters -->
+{% endif %}

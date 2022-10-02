@@ -1,0 +1,46 @@
+{% layout none %}
+{% assign bands_collection = collections["bands"] %}
+
+
+
+    <div class="collection-display" data-index="1">
+      {%- for product in bands_collection.products -%}
+        <div class="product-card">
+          <img
+            class="product-image Image--lazyLoad Image--fadeIn variant-image"
+            src="{{product.first_available_variant.image | img_url: 'medium' }}"
+            alt=""
+          />
+          <div class="product-information">
+            <h3 class="product-title">{{ product.title }}</h3>
+            <p class="product-price">{{product.first_available_variant.price | money_without_trailing_zeros}}</p>
+          </div>
+          <div class="product-select">
+            <div class="band-metal">
+              <p class="active-band-metal-title">Metal: {{product.first_available_variant.title}}</p>
+              {%- for variant in product.variants -%}
+                <img 
+                  class="metal"
+                  data-image = "{{variant.image | img_url: 'medium'}}"
+                  data-price = "{{ variant.price | money_without_trailing_zeros}}"
+                  data-value="{{ variant.option1 }}" 
+                  src="{{ variant.option1 | handle | append: ".png" | file_img_url: "20x" }}" 
+                  alt="" 
+                  onclick="addBandMetal(event)"
+                  onmouseover="hoverBandMetal(event)"
+                  onmouseout="selectedBandMetal(event)"
+                  >
+
+              {%- endfor -%}
+            </div>
+            <button
+              class="Button Button--primary"
+              data-handle="{{ product.handle }}"
+              onclick="selectBtn(event)"
+            >
+              SELECT
+            </button>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>

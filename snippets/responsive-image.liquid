@@ -1,0 +1,80 @@
+{% comment %} Default images {% endcomment %}
+{% assign PHONE_IMAGE = image %}
+{% assign TABLET_IMAGE = image %}
+{% assign DESKTOP_IMAGE = image %}
+
+{% comment %} Default widths {% endcomment %}
+{% assign PHONE_IMAGE_WIDTH = '640x' %}
+{% assign TABLET_IMAGE_WIDTH = '768x' %}
+{% assign DESKTOP_IMAGE_WIDTH = '1680x' %}
+
+{% comment %} When defined, the '<device>_image' parameter overrides the default image {% endcomment %}
+{% comment %} Override default phone image {% endcomment %}
+{% if phone_image != blank and phone_image != false %}
+    {% assign PHONE_IMAGE = phone_image %}
+{% endif %}
+
+{% comment %} Override default tablet image {% endcomment %}
+{% if tablet_image != blank and tablet_image != false %}
+    {% assign TABLET_IMAGE = tablet_image %}
+{% endif %}
+
+{% comment %} Override default desktop image {% endcomment %}
+{% if desktop_image != blank and desktop_image != false %}
+    {% assign DESKTOP_IMAGE = desktop_image %}
+{% endif %}
+
+{% comment %} When defined, the '<device_width>' parameter overrides the default widths {% endcomment %}
+{% if width != blank %}
+    {% assign PHONE_IMAGE_WIDTH = width | append: 'x' %}
+    {% assign TABLET_IMAGE_WIDTH = width | append: 'x' %}
+    {% assign DESKTOP_IMAGE_WIDTH = width | append: 'x' %}
+{% else %}
+    {% comment %} Override default phone width {% endcomment %}
+    {% if phone_width != blank %}
+        {% assign PHONE_IMAGE_WIDTH = phone_width | append: 'x' %}
+    {% endif %}
+
+    {% comment %} Override default tablet width {% endcomment %}
+    {% if tablet_width != blank %}
+        {% assign TABLET_IMAGE_WIDTH = tablet_width | append: 'x' %}
+    {% endif %}
+
+    {% comment %} Override default desktop width {% endcomment %}
+    {% if desktop_width != blank %}
+        {% assign DESKTOP_IMAGE_WIDTH = desktop_width | append: 'x' %}
+    {% endif %}
+{% endif %}
+
+{% if image != blank %}
+    <picture class="{% if class != blank %}{{ class }}{% endif %}">
+        {% comment %} Phone image {% endcomment %}
+        {% if phone_image != false %}
+          <source
+              media="(max-width: 640px)"
+              data-srcset="{{ PHONE_IMAGE | img_url: PHONE_IMAGE_WIDTH, format: 'pjpg' }} 1x,
+                      {{ PHONE_IMAGE | img_url: PHONE_IMAGE_WIDTH, format: 'pjpg', scale: 2 }} 2x">
+        {% endif %}
+
+        {% comment %} Tablet image {% endcomment %}
+        {% if tablet_image != false %}
+          <source
+              media="(min-width: 641px) and (max-width: 768px)"
+              data-srcset="{{ TABLET_IMAGE | img_url: TABLET_IMAGE_WIDTH, format: 'pjpg' }} 1x,
+                      {{ TABLET_IMAGE | img_url: TABLET_IMAGE_WIDTH, format: 'pjpg', scale: 2 }} 2x">
+        {% endif %}
+
+        {% comment %} Desktop image {% endcomment %}
+        {% if desktop_image != false %}
+          <source
+              media="(min-width: 769px)"
+              data-srcset="{{ DESKTOP_IMAGE | img_url: DESKTOP_IMAGE_WIDTH, format: 'pjpg' }} 1x,
+                      {{ DESKTOP_IMAGE | img_url: DESKTOP_IMAGE_WIDTH, format: 'pjpg', scale: 2 }} 2x">
+        {% endif %}
+
+        {% comment %} Legacy browser and search engine fallback image {% endcomment %}
+        <img class="lazy" data-src="{{ image | img_url: DESKTOP_IMAGE_WIDTH, format: 'pjpg', scale: 1.5 }}" {% if image.alt != blank %}alt="{{ image.alt | escape }}"{% endif %} {% if zoom == true %}data-action="zoom"{% endif %}>
+    </picture>
+    {% else %}
+{{"image is blank"}}
+    {% endif %}
