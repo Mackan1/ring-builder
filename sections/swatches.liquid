@@ -1,0 +1,50 @@
+<style>
+    {%- for block in section.blocks -%}
+        {%- assign _block = block.settings -%}
+        {%- assign block_title = _block.title -%}
+        {%- assign block_color = _block.color -%}
+        {%- assign block_image = _block.image -%}
+
+        {% if block_title != blank %}
+            .swatch--{{ block_title | handle }} {
+                background-color: {{ block_color }};
+                {% if block_image != blank %}
+                    background-image: url("{{- block_image | img_url: '64x' -}}")
+                {% endif %}
+            }
+        {% endif %}
+    {%- endfor -%}
+</style>
+
+{% comment %} Dirty hack to show theme settings under section settings {% endcomment %}
+{% capture labels %}{{ settings.color_labels }}{% endcapture %}
+
+{% schema %}
+{
+    "name": "Swatches",
+    "blocks": [
+        {
+            "type": "swatch",
+            "name": "Swatch",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Text"
+                },
+                {
+                    "type": "color",
+                    "id": "color",
+                    "label": "Color",
+                    "default": "#fff"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "image",
+                    "label": "Image"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

@@ -1,0 +1,518 @@
+<div class="hero-video section-id-{{ section.id }}" id="hero-video" data-section-type="hero-video">
+
+    {% assign settings = section.settings %}
+
+    {% assign desktop_poster = settings.video_poster_desktop %}
+    {% assign mobile_poster = settings.video_poster_mobile %}
+
+    {% assign desktop_mp4 = settings.video_url_desktop_mp4 %}
+    {% assign desktop_webm = settings.video_url_desktop_webm %}
+
+    {% assign mobile_mp4 = settings.video_url_mobile_mp4 %}
+    {% assign mobile_webm = settings.video_url_mobile_webm %}
+
+    <video muted autoplay loop playsinline
+        class="lazy hero-video-desktop"
+        data-src="{{- desktop_mp4 -}}"
+        {% if desktop_poster %}poster="{{ desktop_poster | img_url: 'master', format: 'pjpg' }}"{% endif %}>
+        <source type="video/mp4" data-src="{{- desktop_mp4 -}}" />
+        <source type="video/webm" data-src="{{- desktop_webm -}}" />
+    </video>
+
+    <video muted autoplay loop playsinline
+        class="lazy hero-video-mobile"
+        data-src="{{- mobile_mp4 -}}"
+        {% if mobile_poster %}data-poster="{{ mobile_poster | img_url: 'master', format: 'pjpg' }}"{% endif %}>
+        <source type="video/mp4" data-src="{{- mobile_mp4 -}}" />
+        <source type="video/webm" data-src="{{- mobile_webm -}}" />
+    </video>
+
+    <div class="hero-video-content">
+        <div>
+            <h4 class="hero-video-subheading">{{ settings.subheading | escape }}</h4>
+            <h1 class="hero-video-heading">{{ settings.heading | escape }}</h1>
+            {%- if settings.coupon_text != blank -%}<h2 class="hero-video-coupon-text">{{ settings.coupon_text }}</h2>{%- endif -%}
+            <p class="hero-video-text">{{ settings.text | escape }}</p>
+
+            {% if settings.button_link_1 != blank %}
+                <a class="hero-video-button" href="{{ settings.button_link_1 }}">
+                    {{- settings.button_text_1 | escape -}}
+                </a>
+            {% endif %}
+
+            {% if settings.button_link_2 != blank %}
+                <a class="hero-video-button" href="{{ settings.button_link_2 }}">
+                    {{- settings.button_text_2 | escape -}}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-video {
+        width: 100%;
+        position: relative;
+    }
+
+    .hero-video video {
+        width: 100%;
+    }
+
+    .hero-video-desktop {
+        display: block;
+    }
+
+    .hero-video-mobile {
+        display: none;
+    }
+
+    @media (max-width: 767px) {
+        .hero-video-desktop {
+            display: none;
+        }
+
+        .hero-video-mobile {
+            display: block;
+        }
+    }
+
+    .hero-video-content {
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        padding: 0 150px;
+        color: #fff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    @media (min-width: 768px) and (max-width: 990px) {
+        .hero-banner-content {
+            padding: 0 50px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hero-video-content {
+            position: relative;
+            padding: 0 10px;
+            margin: 20px 0;
+            max
+        }
+    }
+
+    .hero-video-heading {
+        font-family: Cardo, "Helvetica Neue", Helvetica, sans-serif;
+    }
+
+    .hero-video-subheading {
+        font-family: Lato, "Helvetica Neue", Helvetica, sans-serif;
+    }
+
+    .hero-video-heading {
+        font-size: 24px;
+        font-weight: normal;
+        line-height: 1.2em;
+        margin-bottom: 20px;
+    }
+    @media (max-width: 767px) {
+        .hero-video-heading {
+            font-size: 18px;
+        }
+    }
+
+    .hero-video-subheading {
+        font-size: 12px;
+        line-height: 1.4em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+    @media (max-width: 767px) {
+        .hero-video-subheading {
+            font-size: 10px;
+        }
+    }
+    .hero-video-coupon-text {
+        font-family: Cardo, "Helvetica Neue", Helvetica, sans-serif;
+        color: #fff;
+        font-size: 18px;
+        line-height: 1.2em;
+        margin-bottom: 20px;
+    }
+
+    .hero-video-text {
+        margin-bottom: 20px;
+    }
+
+    .hero-video-button {
+        font-family: Lato, "Helvetica Neue", Helvetica, sans-serif;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin: 0;
+        text-decoration: none;
+        cursor: pointer;
+        height: 35px;
+        line-height: 35px;
+        vertical-align: middle;
+        min-width: 140px;
+        text-align: center;
+        box-sizing: content-box;
+        border-radius: 0;
+        padding: 0 10px;
+        margin: 0 5px;
+        display: inline-block;
+    }
+
+    @media (max-width: 767px) {
+        .hero-video-button {
+            min-width: 100px;
+        }
+
+        .hero-video-button:first-of-type {
+            margin-left: 0;
+        }
+
+        .hero-video-button:last-of-type {
+            margin-right: 0;
+        }
+    }
+</style>
+
+{% comment %} Text position {% endcomment %}
+{% assign text_position = settings.position %}
+
+{% if text_position == 'left' %}
+    {% assign text_position = 'flex-start' %}
+{% elsif text_position == 'center' %}
+    {% assign text_position = 'center' %}
+{% elsif text_position == 'right' %}
+    {% assign text_position = 'flex-end' %}
+{% endif %}
+
+{% comment %} Desktop text colors {% endcomment %}
+{% assign text_color_hover = blank %}
+
+{% if settings.text_color == '#ffffff' %}
+    {% assign text_color_hover = '#2e3b47' %}
+{% elsif settings.text_color == '#000000' %}
+    {% assign text_color_hover = '#ffffff' %}
+{% elsif settings.text_color == '#2e3b47' %}
+    {% assign text_color_hover = '#ffffff' %}
+{% endif %}
+
+{% comment %} Mobile text colors {% endcomment %}
+{% assign text_color_hover_mobile = blank %}
+
+{% if settings.text_color_mobile == '#ffffff' %}
+    {% assign text_color_hover_mobile = '#2e3b47' %}
+{% elsif settings.text_color_mobile == '#000000' %}
+    {% assign text_color_hover_mobile = '#ffffff' %}
+{% elsif settings.text_color_mobile == '#2e3b47' %}
+    {% assign text_color_hover_mobile = '#ffffff' %}
+{% endif %}
+
+<style>
+
+    {% if settings.hide_section == true %}
+    .section-id-{{ section.id }} {
+        display: none;
+    }
+    {% endif %}
+
+    .hero-video-content {
+        justify-content: {{ text_position }};
+        text-align: {{ settings.alignment }};
+        {% if settings.enable_overlay %}
+        background: {{ settings.overlay_bg | hex_to_rgba: 0.35 }};
+        {% endif %}
+    }
+
+    @media (max-width: 767px) {
+        .hero-video-content {
+            justify-content: center;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hero-video-content {
+            background: transparent;
+        }
+    }
+
+    .hero-video-heading,
+    .hero-video-subheading,
+    .hero-video-text,
+    .hero-video-coupon-text {
+        color: {{ settings.text_color }};
+    }
+
+    @media (max-width: 767px) {
+        .hero-video-heading,
+        .hero-video-subheading,
+        .hero-video-text,
+        .hero-video-coupon-text {
+            color: {{ settings.text_color_mobile }};
+        }
+    }
+
+    .hero-video-button {
+        background: transparent;
+        border: 1px solid {{ settings.text_color }};
+        color: {{ settings.text_color }} !important;
+        transition: all 0.3s ease-in !important;
+    }
+
+    .hero-video-button:hover {
+        background: {{ settings.text_color }};
+        color: {{ text_color_hover }} !important;
+    }
+
+    @media (max-width: 767px) {
+        .hero-video-button {
+            background: transparent;
+            border: 1px solid {{ settings.text_color_mobile }};
+            color: {{ settings.text_color_mobile }} !important;
+        }
+
+        .hero-video-button:hover {
+            background: {{ settings.text_color_mobile }};
+            color: {{ text_color_hover_mobile }} !important;
+        }
+    }
+</style>
+
+{% schema %}
+{
+  "name": "Hero video",
+  "settings": [
+    {
+        "type": "checkbox",
+        "id": "hide_section",
+        "label": "Hide section",
+        "default": false
+    },
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+        "type": "checkbox",
+        "id": "enable_overlay",
+        "label": "Enable overlay background",
+        "default": true
+    },
+    {
+      "type": "select",
+      "id": "overlay_bg",
+      "label": "Overlay color",
+      "default": "#000000",
+      "options": [
+        {
+          "value": "#000000",
+          "label": "Black"
+        },
+        {
+          "value": "#FFFFFF",
+          "label": "White"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text options"
+    },
+    {
+      "type": "select",
+      "id": "text_color",
+      "label": "Text color (Desktop)",
+      "default": "#2e3b47",
+      "options": [
+        {
+          "value": "#2e3b47",
+          "label": "Navy blue (#2e3b47)"
+        },
+        {
+          "value": "#000000",
+          "label": "Black (#000000)"
+        },
+        {
+          "value": "#ffffff",
+          "label": "White (#ffffff)"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_color_mobile",
+      "label": "Text color (Mobile)",
+      "default": "#2e3b47",
+      "options": [
+        {
+          "value": "#2e3b47",
+          "label": "Navy blue (#2e3b47)"
+        },
+        {
+          "value": "#000000",
+          "label": "Black (#000000)"
+        },
+        {
+          "value": "#ffffff",
+          "label": "White (#ffffff)"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Text position",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Text alignment",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Scandinavian Designer Watches"
+    },
+    {
+      "type": "richtext",
+      "id": "coupon_text",
+      "label": "Coupon text"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "See the new summer collection today!"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "header",
+      "content": "Button 1"
+    },
+    {
+      "type": "text",
+      "id": "button_text_1",
+      "label": "Button text",
+      "default": "Shop Mens"
+    },
+    {
+      "type": "url",
+      "id": "button_link_1",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Button 2"
+    },
+    {
+      "type": "text",
+      "id": "button_text_2",
+      "label": "Button text",
+      "default": "Shop Womens"
+    },
+    {
+      "type": "url",
+      "id": "button_link_2",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Video posters"
+    },
+    {
+      "type": "image_picker",
+      "id": "video_poster_desktop",
+      "label": "Desktop/Tablet",
+      "info": "Recommended 1200px width"
+    },
+    {
+      "type": "image_picker",
+      "id": "video_poster_mobile",
+      "label": "Mobile",
+      "info": "Recommended 768px width"
+    },
+    {
+      "type": "header",
+      "content": "Video (Desktop/tablet)"
+    },
+    {
+      "type": "textarea",
+      "id": "video_url_desktop_mp4",
+      "label": ".mp4",
+      "info": "*Required"
+    },
+    {
+      "type": "textarea",
+      "id": "video_url_desktop_webm",
+      "label": ".webm",
+      "info": "*Required"
+    },
+    {
+      "type": "header",
+      "content": "Video (Mobile)"
+    },
+    {
+      "type": "textarea",
+      "id": "video_url_mobile_mp4",
+      "label": ".mp4",
+      "info": "*Required"
+    },
+    {
+      "type": "textarea",
+      "id": "video_url_mobile_webm",
+      "label": ".webm",
+      "info": "*Required"
+    }
+  ]
+}
+
+{% endschema %}

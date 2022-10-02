@@ -1,0 +1,207 @@
+{%- if section.settings.layout_mode == 'carousel' -%}
+  {%- capture flickity_options -%}
+  {
+    "prevNextButtons": true,
+    "pageDots": false,
+    "wrapAround": false,
+    "contain": true,
+    "cellAlign": "center",
+    "watchCSS": true,
+    "dragThreshold": 8,
+    "groupCells": true,
+    "arrowShape": {"x0": 20, "x1": 60, "y1": 40, "x2": 60, "y2": 35, "x3": 25}
+  }
+  {%- endcapture -%}
+{%- endif -%}
+
+{%- capture section_settings -%}
+{
+  "layout": {{ section.settings.layout_mode | json }}
+}
+{%- endcapture -%}
+
+<section class="Section Section--spacingNormal" data-section-id="{{ section.id }}" data-section-type="featured-collections" data-settings='{{ section_settings }}'>
+    <header class="SectionHeader SectionHeader--center">
+        <div class="Container">
+            {%- if section.settings.title != blank -%}
+            <h2 class="SectionHeader__Heading Heading u-h1">{{ section.settings.title | escape }}</h2>
+            {%- endif -%}
+        </div>
+    </header>
+
+    {% if section.blocks.size > 0 %}
+        <div class="TabPanel" id="block-{{ block.id }}" aria-hidden="false" role="tabpanel">
+            <div class="ProductListWrapper">
+                {%- assign item_count = section.blocks.size -%}
+
+                {% capture collection_loop %}
+                    {%- for block in section.blocks -%}
+                        {%- assign collection = collections[block.settings.collection] -%}
+
+                        {%- if collection != empty -%}
+                            {% assign _image = block.settings.image | default: collection.image %}
+                            {% capture collection_item %}
+                                <div class="ProductItem">
+                                    <div class="ProductItem__Wrapper">
+                                    {%- comment -%}
+                                    We are using LazySizes to efficiently choose the most appropriate image in the set. However, because internally LazySizes uses srcset, we need to make
+                                    sure that the image sizes we offer is not larger than the max size uploaded by the merchants.
+                                    {%- endcomment -%}
+                                
+                                    {%- if settings.product_image_size == 'natural' -%}
+                                        {%- assign use_natural_size = true -%}
+                                    {%- else -%}
+                                        {%- assign use_natural_size = false -%}
+                                    {%- endif -%}
+                                
+                                    {%- assign has_alternate_image = false -%}
+                                
+                                        <a href="{{ collection.url }}" class="ProductItem__ImageWrapper">
+                                            {%- assign max_width = _image.width -%}
+                                            {%- assign media_aspect_ratio = _image.aspect_ratio | default: _image.aspect_ratio -%}
+                                    
+                                            <div class="AspectRatio AspectRatio--{% if use_natural_size %}withFallback{% else %}{{ settings.product_image_size }}{% endif %}" style="max-width: {{ max_width }}px; {% if use_natural_size %}padding-bottom: {{ 100.0 | divided_by: media_aspect_ratio }}%;{% endif %} --aspect-ratio: {{ media_aspect_ratio }}">  
+                                            {%- capture supported_sizes -%}{%- render 'image-size', sizes: '200,400,600,700,800,900,1000,1200', image: _image -%}{%- endcapture -%}
+                                            {%- assign image_url = _image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                                    
+                                            <img class="ProductItem__Image Image--lazyLoad Image--fadeIn" data-src="{{ image_url }}" data-widths="[{{ supported_sizes }}]" data-sizes="auto" alt="{{ _image.alt | escape }}" data-media-id="{{ _image.id }}">
+                                            <span class="Image__Loader"></span>
+                                    
+                                            <noscript>
+                                                <img class="ProductItem__Image" src="{{ _image | img_url: '600x' }}" alt="{{ _image.alt | escape }}">
+                                            </noscript>
+                                            </div>
+                                        </a>
+
+                                        <div class="ProductItem__Info">
+                                            <h2 class="ProductItem__Title Heading">
+                                                <a href="{{ collection.url }}">{{ collection.title }}</a>
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endcapture %}
+
+                            {% if section.settings.layout_mode == 'grid' %}
+                                <div class="Grid__Cell 1/{{ section.settings.grid_mobile_items_per_row }}--phone 1/2--tablet 1/{{ section.settings.grid_desktop_items_per_row }}--lap-and-up">
+                                    {{ collection_item }}
+                                </div>
+                            {% else %}
+                                <div class="Carousel__Cell">
+                                    {{ collection_item }}
+                                </div>
+                            {% endif %}
+                        {%- endif -%}
+                    {%- endfor -%}
+                {% endcapture %}
+                
+                {%- if section.settings.layout_mode == 'grid' -%}
+                    <div class="ProductList ProductList--grid ProductList--removeMargin Grid" data-mobile-count="{{ section.settings.grid_mobile_items_per_row }}" data-desktop-count="{{ section.settings.grid_desktop_items_per_row }}" style="display: flex; justify-content: center;">
+                        {{ collection_loop }}
+                    </div>
+                {%- else -%}
+                    <div class="ProductList ProductList--carousel Carousel" data-flickity-config='{{ flickity_options }}'>
+                        {{ collection_loop }}
+                    </div>
+                {%- endif -%}
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+{%- capture hack -%}
+{%- comment -%}This is just an ugly hack to make those variables appear as part of the theme editor in the General Settings{%- endcomment -%}
+{% if section.settings.layout_mode == 'grid' %}{{ settings.product_list_horizontal_spacing }},{{ settings.product_list_vertical_spacing }}{% endif %}
+{%- endcapture -%}
+
+{% schema %}
+{
+  "name": "Featured collection items",
+  "class": "shopify-section--bordered",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Sub-heading",
+      "default": "Featured collection"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "carousel",
+          "label": "Carousel"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "header",
+      "content": "Grid",
+      "info": "Those settings apply only if the layout mode is set to grid."
+    },
+    {
+      "type": "select",
+      "id": "grid_mobile_items_per_row",
+      "label": "Collections per row (mobile)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "min": 2,
+      "max": 4,
+      "id": "grid_desktop_items_per_row",
+      "label": "Collections per row (desktop)",
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "Replaces default collection image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "category": "Collection",
+      "name": "Featured collection items",
+      "settings": {},
+      "blocks": [
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

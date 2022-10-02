@@ -1,0 +1,34 @@
+{% assign section_settings = section.settings %}
+{% assign title = section_settings.title %}
+{% assign cta_text = section_settings.cta_text %}
+{% assign cta_link = section_settings.cta_link %}
+
+<div class="instafeed-outer-container">
+    <h1>{{ title }}</h1>
+    <a class="follow-us-cta" href="{{ cta_link }}">{{ cta_text }}</a>
+    <div id="insta-feed"></div>
+</div>
+
+
+{% schema %}
+    {
+        "name": "Instafeed",
+        "settings": [
+            {
+                "type": "text",
+                "id": "title",
+                "label": "Title"
+            },
+            {
+                "type": "text",
+                "id": "cta_text",
+                "label": "CTA text"
+            },
+            {
+                "type": "url",
+                "id": "cta_link",
+                "label": "CTA link"
+            }
+        ]
+    }
+{% endschema %}

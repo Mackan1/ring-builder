@@ -1,0 +1,208 @@
+{% assign settings = section.settings %}
+{% assign blocks = section.blocks %}
+
+<section class="flipBlocks section">
+  <div class="container">
+    {% if blocks %}
+      {% for block in blocks %}
+        {% assign block_id = block.id %}
+        {% assign block_type = block.type %}
+        {% assign block_settings = block.settings %}
+        {% assign is_flipped = block_settings.enable_flip %}
+        {% assign heading = block_settings.heading %}
+        {% assign text = block_settings.text %}
+        {% assign link_text = block_settings.link_text %}
+        {% assign link_url = block_settings.link_url %}
+
+        <div class="flipBlocks_row{% if is_flipped %} flipBlocks_row-reversed{% endif %}" id="{{ block_id }}">
+
+          {% comment %} Image block {% endcomment %}
+          {% if block_type == 'block-image' %}
+            {% assign image = block_settings.image %}
+
+            <div class="flipBlocks_column">
+              <div class="flipBlocks_imageContainer">
+                {% include 'responsive-image', image: image, class: 'flipBlocks_image' %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% comment %} Video block {% endcomment %}
+          {% if block_type == 'block-video' %}
+            {% assign video_poster = block_settings.video_poster %}
+            {% assign video_mp4 = block_settings.video_url_mp4 %}
+            {% assign video_webm = block_settings.video_url_webm %}
+            {% assign video_error_message = block_settings.video_error_message %}
+
+            <div class="flipBlocks_column">
+              <div class="flipBlocks_videoContainer">
+                <video
+                  class="flipBlocks_video" 
+                  {% if video_poster %}poster="{{ video_poster | img_url: 'master', format: 'pjpg' }}"{% endif %}
+                  playsinline
+                >
+                  <source src="{{- video_mp4 -}}" type="video/mp4">
+                  <source src="{{- video_webm -}}" type="video/webm">
+                  {{- video_error_message -}}
+                </video>
+              </div>
+            </div>
+          {% endif %}
+
+          {% comment %} Text block {% endcomment %}
+          <div class="flipBlocks_column">
+            <div class="flipBlocks_textContainer">
+              <h2 class="SectionHeader__Heading Heading u-h1">{{- heading -}}</h2>
+              <div>{{- text -}}</div>
+              {%- if link_text and link_url -%}
+                <a class="link link-large" href="{{ link_url }}">{{ link_text }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Flip Blocks",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Options"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "block-image",
+      "name": "Image block",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Options"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_flip",
+          "label": "Flip text/image block position",
+          "default": false
+        },
+        {
+          "type": "header",
+          "content": "Text"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Link"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link text"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link url"
+        },
+        {
+          "type": "header",
+          "content": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Recommended size: 780x780"
+        }
+      ]
+    },
+    {
+      "type": "block-video",
+      "name": "Video block",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Options"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_flip",
+          "label": "Flip text/video block position",
+          "default": false
+        },
+        {
+          "type": "header",
+          "content": "Text"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Link"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link text"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link url"
+        },
+        {
+          "type": "header",
+          "content": "Video"
+        },
+        {
+          "type": "image_picker",
+          "id": "video_poster",
+          "label": "Video poster",
+          "info": "Recommended 1200px width"
+        },
+        {
+          "type": "textarea",
+          "id": "video_url_mp4",
+          "label": ".mp4",
+          "info": "*Required"
+        },
+        {
+          "type": "textarea",
+          "id": "video_url_webm",
+          "label": ".webm",
+          "info": "*Required"
+        },
+        {
+          "type": "textarea",
+          "id": "video_error_message",
+          "label": "Error message",
+          "default": "Sorry, your browser doesn't support embedded videos."
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

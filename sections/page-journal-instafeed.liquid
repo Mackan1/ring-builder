@@ -1,0 +1,99 @@
+<div class="PageContent">
+<div class="padded-row cf" data-section-type="instagram">
+    {% unless settings.use_fullwidth_layout %}<div class="container">{% endunless %}
+        
+    {% if section.settings.title != blank %}
+    <div class="SectionHeader SectionHeader--center">
+        <h1 class="SectionHeader__Heading Heading u-h1">{{ section.settings.title | escape }}</h1>
+    </div>
+    {% endif %}
+  
+    {% if section.settings.account != blank %}
+    <div class="view-all align-center">
+      <a target="_blank" href="https://www.instagram.com/{{ section.settings.account | remove: '@' }}">@{{ section.settings.account | remove: '@' | escape }}</a>
+    </div>
+    {% endif %}
+  
+    {% unless section.settings.access_token == blank %}
+    
+    <div class="willstagram {% if settings.use_fullwidth_layout %}willstagram--uncontained{% endif %} {% unless section.settings.show_margins %}willstagram--no-margins{% endunless %}" data-user_id="self" data-count="25" data-access_token="{{ section.settings.access_token | escape }}"></div>
+    
+    {% else %}
+    <div class="willstagram willstagram-placeholder {% if settings.use_fullwidth_layout %}willstagram--uncontained{% endif %} {% unless section.settings.show_margins %}willstagram--no-margins{% endunless %}">
+      <div class="items">
+        {% for i in (1..12) %}<div class="item">
+            <div class="placeholder-image">{{ 'image' | placeholder_svg_tag }}</div>
+          </div>{% endfor %}
+      </div>
+    </div>
+    {% endunless %}
+    
+    {% unless settings.use_fullwidth_layout %}</div>{% endunless %}
+  </div>
+</div>
+  <script>
+      window.addEventListener('DOMContentLoaded', (event) => {
+            console.log('DOM fully loaded and parsed');
+            var instagramElement =  document.querySelector('.willstagram')
+            var user_id = instagramElement.dataset.user_id;
+            var tag = instagramElement.dataset.tag;
+            var access_token = instagramElement.dataset.access_token;
+            var count = 10;
+            var url = '';
+            if(typeof user_id != 'undefined') {
+              url = 'https://api.instagram.com/v1/users/' + user_id + '/media/recent?count='+count;
+            } else if(typeof tag != 'undefined') {
+              url = 'https://api.instagram.com/v1/tags/' + tag + '/media/recent?count='+count;
+            }
+            fetch(url+ (typeof access_token == 'undefined'? '' : ('&access_token='+access_token))).then(function(response){
+                response.json().then(function(json){
+                    console.log(json)
+                   /* if(typeof res.data != 'undefined') {
+                  var $itemContainer = $('<div class="items">').appendTo($willstagram);
+                  var limit = Math.min(20, res.data.length);
+                  for(var i = 0; i < limit; i++) {
+                    var photo_url = res.data[i].images.low_resolution.url.replace('http:', '');
+                    var link = res.data[i].link;
+                    var caption = res.data[i].caption != null ? res.data[i].caption.text : '';
+                    $itemContainer.append('<div class="item"><a target="_blank" href="'+link+'"><img src="'+photo_url+'" /></a><div class="desc">'+caption+'</div></div>');
+                  }
+                  $willstagram.trigger('loaded.willstagram');
+                } else if(typeof res.meta !== 'undefined' && typeof res.meta.error_message !== 'undefined') {
+                  $willstagram.append('<div class="willstagram__error">'+res.meta.error_message+'</div>');
+                }
+                })*/
+            })
+        });
+    });
+  </script>
+  {% schema %}
+    {
+      "name": "Instagram feed",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Instagram feed"
+        },
+        {
+          "type": "text",
+          "id": "account",
+          "label": "Account name"
+        },
+        {
+          "type": "text",
+          "id": "access_token",
+          "label": "Access token",
+          "info": "Required - [get your access token](http:\/\/cleanthemes.co.uk\/pages\/instagram-integration)"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_margins",
+          "label": "Show margins",
+          "default": true
+        }
+      ]
+    }
+  {% endschema %}
+  

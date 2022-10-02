@@ -1,0 +1,278 @@
+{% assign diamonds_collection = collections["diamonds"] %}  
+<script>
+  var allDiamonds = [
+   {% paginate diamonds_collection.all_products by 1000 %}
+    {%- for product in diamonds_collection.all_products -%}
+        {
+            "title":"{{ product.title }}",
+            "handle":"{{ product.handle }}",
+            "tags":"{{product.tags}}",
+            "price":"{{product.price | money_without_trailing_zeros}}",
+            "images": {{product.images | json}} 
+        }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+{% endpaginate %}
+]
+  console.log(allDiamonds)
+  window.addEventListener('load', (event) => {
+    fectingBands()
+    fectingCombinations()
+});
+</script>
+
+<section class="ring-builder">
+  <ol class="progress">
+    <li class="step active" data-index="0">
+         1. DIAMOND 
+          <img src="https://cdn.shopify.com/s/files/1/0559/8127/7244/files/diamond.svg?v=1644308981" alt="">
+        <span class="step-hover">
+          <span class="step-hover_information">
+            <img id="selected-diamond-image" src="https://cdn.shopify.com/s/files/1/0559/8127/7244/products/gold_0c1b8463-49d4-45b1-bacb-832ce1a7ff30.jpg?v=1644244882" alt="">
+            <span class="selected-information">
+              <p class="selected-diamond"></p>
+              <p class="selected-diamond-price"></p>
+            </span>
+          </span>
+          <span class="step-hover_buttons">
+            <button class="change">Change</button>
+          </span>
+        </span>
+       </li>
+    <li class="step" data-index="1">
+      2. BAND 
+      <img src="https://cdn.shopify.com/s/files/1/0559/8127/7244/files/band1.svg?v=1644311244" alt="">
+        <span class="step-hover">
+          <span class="step-hover_information">
+            <img id="selected-band-image" src="https://cdn.shopify.com/s/files/1/0559/8127/7244/products/gold_0c1b8463-49d4-45b1-bacb-832ce1a7ff30.jpg?v=1644244882" alt="">
+            <span class="selected-information">
+              <p class="selected-band"></p>
+              <p class="selected-band-metal"></p>
+              <p class="selected-band-price"></p>
+            </span>
+          </span>
+          <span class="step-hover_buttons">
+            <button class="change">Change</button>
+          </span>
+        </span>
+        </li>
+    <li class="step" data-index="2">3. COMPLETE RING <img src="https://cdn.shopify.com/s/files/1/0559/8127/7244/files/diamond-ring1.svg?v=1644311644" alt=""></li>
+  </ol>
+
+  {%- comment -%}Diamond selection part{%- endcomment -%}
+  <div class="builder-part active-selector" >
+    <div class="part-title">
+      <h3>{{ section.settings.diamond_header }}</h3>
+      <p>
+        {{ section.settings.diamond_option_text }}
+      </p>
+    </div>
+
+    {% assign cuts_arr = 'Round Brilliant,Oval,Emerald,Pear,Marquise,Cushion,Princess,Radiant' | split: ',' %}
+    {% assign cuts_arr_handle = cuts_arr | downcase | replace: ' ', '-' %}
+    {% assign tag_links = '' %}
+    
+
+
+    {%- for tag in collections["diamonds"].all_tags -%}
+      {% assign tag_handle = tag | handle %}
+
+      {% if cuts_arr_handle contains tag_handle %}
+        {% capture tag_links %}
+          {{ tag_links }}
+
+          <button data-tag="{{ tag }}" onclick="filteredDiamonds(event)">
+            <img src="{{- tag | handle | append: '.svg' | asset_url -}}" alt="{{ tag }}">
+
+            <span>{{ tag }}</span>
+          </button>
+        {% endcapture %}
+      {% endif %}
+    {%- endfor -%}
+
+    {% if tag_links != '' %}
+      <div class="my-heart-filters">
+        {{ tag_links }}
+      </div><!-- /.my-heart-filters -->
+    {% endif %} 
+
+    <div class="collection-display" data-index="0">    
+
+
+  {%- for product in diamonds_collection.products -%}
+        <div class="product-card">
+          <img
+            class="product-image Image--lazyLoad Image--fadeIn"
+            src="{{ product.images[0] | img_url: '500x' }}"
+            onmouseover="this.src='{{ product.images[1] | img_url: '500x' }}';"
+            onmouseout="this.src='{{ product.images[0] | img_url: '500x'  }}';"
+          />
+          <div class="product-information">
+            <h3 class="product-title">{{ product.title }}</h3>
+            <p class="product-price">{{ product.price | money_without_trailing_zeros }}</p>
+          </div>
+          <div class="product-select">
+            <button
+              class="Button Button--primary"
+              data-handle="{{ product.handle }}"
+            >
+              SELECT
+            </button>
+          </div>
+        </div>
+  {%- endfor -%}
+
+  
+    </div>
+  </div>
+
+
+  {%- comment -%}Band selection part{%- endcomment -%}
+  <div class="builder-part" id="bandCollection">
+    <div class="part-title" >
+      <h3>{{ section.settings.band_header }}</h3>
+      <p>
+        {{ section.settings.band_option_text }}
+      </p>
+    </div>
+  </div>
+  
+  
+{%- comment -%}Final combination part{%- endcomment -%}
+  <div class="builder-part">
+    <div class="final-product">
+      <div class="left-side">
+        <div class="card">
+          <div class="img-display">
+            <div class="img-showcase">
+              
+            </div>
+          </div>
+          <div class="img-select">        
+          </div>
+        </div>
+      </div>
+      <div class="right-side">
+        <div class="combination-information">
+          <h4>NUIT ET LINETTE</h4>
+          <h3 id="combination-title">Review your item</h3>
+          <div class="div-line"></div>
+          <div class="combination-part">
+            <img src="https://cdn.shopify.com/s/files/1/0559/8127/7244/files/diamond.svg?v=1644308981" alt="">
+            <div>
+              <p id="combination-diamond-title"></p>
+              <div>
+                <button class="change-button" data-index="0" onclick="changeButton(event)">Change</button>
+                <p id="combination-diamond-price"></p>
+              </div>
+            </div>
+          </div>
+          <div class="combination-part">
+            <img src="https://cdn.shopify.com/s/files/1/0559/8127/7244/files/band1.svg?v=1644311244" alt="">
+            <div>
+              <p id="combination-band-title"></p>
+              <p id="combination-band-metal"></p>
+              <div>
+                <button class="change-button" data-index="1" onclick="changeButton(event)">Change</button>
+                <p id="combination-band-price"></p>
+              </div>
+            </div>
+          </div>
+          <div class="div-line"></div>
+          <div class="combination-total-price-box">
+            <p>Total</p>
+            <p id="combination-price"></p>
+          </div>
+          
+          <div id="combination-metal"></div>
+          <p id="combination-description"></p>
+        </div>
+        <div class="combination-size-engraving">
+          <div class="combination-size">
+            <label for="ring-size" id="ring-size-label">Ring size:</label>
+            <select name="ring-size" id="ring-size" onchange="findCombiId(this)">
+            </select>
+          </div>
+          <div class="combination-engraving">
+            <label for="engraving">Engraving:</label>
+            <select name="engraving" id="engraving" onchange="showEngraving(this)">
+              <option value="" disabled>ADD ENGRAVING</option>
+              <option value="Yes">Yes</option>
+              <option value="No" selected>No</option>
+            </select>
+          </div>
+          <div class="combination-engraving-options">
+            <input type="text" id="engraving-text" placeholder="Your engraving here..." oninput="inputEngravingText(this)">
+            <select name="engraving-font" id="engraving-font" onchange="engravingFontSelection(this)">
+              <option value="" disabled selected>Select engraving font</option>
+              <option value="Verdana">Verdana</option>
+              <option value="Times New Roman">Times New Roman</option>
+            </select>
+          </div>
+        </div>
+        <div class="add-to-cart-box">
+          <button class="Button Button--primary add-to-cart" onclick="addToCart(event)">ADD TO CART</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {%- if section.settings.bottom_drawer -%}
+    <div class="bottom-drawer">
+      <div class="bottom-drawer__container">
+        <h4>Selected Diamond</h4>
+        <p class="selected-diamond"></p>
+        <h4 class="selected-diamond-price"></h4>
+      </div>
+      <div class="bottom-drawer__container">
+        <h4>Selected Band</h3>
+        <p class="selected-band"></p>
+        <p class="selected-band-metal"></p>
+        <h4 class="selected-band-price"></h4>
+      </div>
+
+      <div class="bottom-drawer__container">
+        <button onclick="displayBookingPopup(event); scrollOnTop()" class="appointment-button">BOOK AN APPOINTMENT</button>
+      </div>
+    </div>
+  {%- endif -%}
+  
+
+</section>
+
+{% schema %} 
+{ "name": "Ring builder 1", 
+"settings": [ 
+{
+    "type": "checkbox",
+    "id": "bottom_drawer",
+    "default": false,
+    "label": "Bottom Ekstra Drawer"
+},
+{
+  "type": "text",
+  "id": "diamond_header",
+  "label": "Diamond Header",
+  "default": "Select A Diamond"
+},
+{
+  "type": "textarea",
+  "id": "diamond_option_text",
+  "label": "Diamond option paragraph",
+  "default": "Write whatever you like here! Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pulvinar quam id lorem mattis gravida. Sed nisi sapien."
+},
+{
+  "type": "text",
+  "id": "band_header",
+  "label": "Band Header",
+  "default": "Select A Band"
+},
+{
+  "type": "textarea",
+  "id": "band_option_text",
+  "label": "Band option paragraph",
+  "default": "Write whatever you like here! Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pulvinar quam id lorem mattis gravida. Sed nisi sapien."
+}
+] 
+} 
+{% endschema %}

@@ -1,0 +1,468 @@
+{% assign blocks = section.blocks %}
+{% assign section_settings = section.settings %}
+{% assign page_title = section_settings.page_title %}
+{% assign step_1_title = section_settings.step_1_title %}
+{% assign step_2_title = section_settings.step_2_title %}
+{% assign step_3_title = section_settings.step_3_title %}
+{% assign step_4_title = section_settings.step_4_title %}
+{% assign step_5_title = section_settings.step_5_title %}
+{% assign step_6_title = section_settings.step_6_title %}
+{% assign ring_size_label = section_settings.ring_size_label %}
+{% assign font_label = section_settings.font_label %}
+{% assign engraving_label = section_settings.engraving_label %}
+{% assign email_label = section_settings.email_label %}
+{% assign name_label = section_settings.name_label %}
+{% assign submit_btn = section_settings.submit_btn %}
+{% assign success_message_title = section_settings.success_message_title %}
+{% assign error_message_title = section_settings.error_message_title %}
+{% assign add_field_error_text = section_settings.add_field_error_text %}
+
+<div class="ring-builder">
+    <h1>{{ page_title }}</h1>
+
+    <div class="ring-builder__section diamondCut-container">
+        <h2>{{ step_1_title }}</h2>
+        <span class="error-label error-label-diamondCut hide">{{ add_field_error_text }}</span>
+        <div class="ring-builder__section__items--flex">
+        {% for block in blocks %}
+            {% if block.type == 'diamond_cut' %}
+                {% assign block_settings = block.settings %}
+                {% assign shape_type = block_settings.shape_type %}
+                {% assign shape_img = block_settings.shape_img %}
+
+                <div class="ring-builder__section__shape-item diamondCut">
+                    <img onclick="chooseRing('diamondCut', event)" alt="{{shape_type}}" src="{{ shape_img | img_url: 'master' }}" />
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+
+    <div class="ring-builder__section diamond-container">
+        <h2>{{ step_2_title }}</h2>
+        <span class="error-label error-label-diamond hide">{{ add_field_error_text }}</span>
+
+        <div class="ring-builder__section__items--flex">
+        {% for block in blocks %}
+            {% if block.type == 'diamond_options' %}
+                {% assign block_settings = block.settings %}
+                {% assign diamond_option = block_settings.diamond_option %}
+                {% assign diamon_option_img = block_settings.diamon_option_img %}
+
+                <div class="ring-builder__section__diamond-type-item diamond ring-builder__section__shape-item">
+                    <img onclick="chooseRing('diamond', event)" alt="{{diamond_option}}" src="{{ diamon_option_img | img_url: 'master' }}" />
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+
+    <div class="ring-builder__section design-container">
+        <h2>{{ step_3_title }}</h2>
+        <span class="error-label error-label-design hide">{{ add_field_error_text }}</span>
+
+        <div class="ring-builder__section__items">
+        {% for block in blocks %}
+            {% if block.type == 'design_options' %}
+                {% assign block_settings = block.settings %}
+                {% assign design = block_settings.design %}
+                {% assign design_img = block_settings.design_img %}
+
+                <div class="ring-builder__section__design-item design">
+                    <img onclick="chooseRing('design', event)" alt="{{design}}" src="{{ design_img | img_url: 'master' }}" />
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+
+    <div class="ring-builder__section metal-container">
+        <h2>{{ step_4_title }}</h2>
+        <span class="error-label error-label-metal hide">{{ add_field_error_text }}</span>
+
+        <div class="ring-builder__section__items--flex">
+        {% for block in blocks %}
+            {% if block.type == 'metal_options' %}
+                {% assign block_settings = block.settings %}
+                {% assign metal = block_settings.metal %}
+                {% assign metal_img = block_settings.metal_img %}
+
+                <div onclick="chooseRing('metal', event)" class="metal ring-builder__section__shape-item ring-builder__section__diamond-type-item">
+                    <img alt="{{metal}}" src="{{ metal_img | img_url: 'master' }}" />
+                    <p>{{ metal }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+
+
+    <div class="ring-builder__section">
+        <h2>{{ step_5_title }}</h2>
+
+        <div class="ring-builder__row size-container">
+            <p class="ring-builder__label">{{ ring_size_label }}</p>
+            <span class="error-label error-label-size hide">{{ add_field_error_text }}</span>
+
+            <select onchange="chooseRing('size', event)">
+                {% for block in blocks %}
+                    {% if block.type == 'ring_sizes' %}
+                        {% assign block_settings = block.settings %}
+                        {% assign size = block_settings.size %}  
+                        <option value="{{ size }}">{{ size }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="ring-builder__row font-container">
+            <p class="ring-builder__label">{{ font_label }}</p>
+
+            <select class="font" onchange="chooseRing('font', event)">
+                {% for block in blocks %}
+                    {% if block.type == 'font_options' %}
+                        {% assign block_settings = block.settings %}
+                        {% assign font = block_settings.font %}  
+                        <option value="{{ font }}">{{ font }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="ring-builder__row engravingText-container">
+            <p class="ring-builder__label">{{ engraving_label }}</p>
+            <input class="engravingText" onchange="chooseRing('engravingText', event)" type="text" />
+        </div>
+    </div>
+
+    <div class="ring-builder__section">
+        <h2>{{ step_6_title }}</h2>
+
+        <div class="ring-builder__row email-container">
+            <p class="ring-builder__label">{{ email_label }}</p>
+            <span class="error-label error-label-email hide">{{ add_field_error_text }}</span>
+
+            <input class="email" onchange="chooseRing('email', event)" placeholder="email@gmail.com" type="email" />
+        </div>
+
+        <div class="ring-builder__row firstName-container lastName-container">
+            <p class="ring-builder__label">{{ name_label }}</p>
+            <span class="error-label error-label-firstName error-label-lastName hide">{{ add_field_error_text }}</span>
+            
+            <input class="firstName" onchange="chooseRing('firstName', event)" placeholder="First Name" type="text" />
+            <input class="lastName" onchange="chooseRing('lastName', event)" placeholder="Last Name" type="text" />
+        </div>
+    </div>
+
+    <button class="ring-builder__btn" onclick="submitRing(event)">{{ submit_btn }}</button>
+</div>
+
+    <div class="ring-builder__popup-container hide">
+        <div class="ring-builder__popup-container__content">
+            <span onclick="closePopup()">X</span>
+            <h3></h3>
+            <div class="ring-builder__popup-container__content__text hide">
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+<script>
+const popupContainer = document.querySelector('.ring-builder__popup-container')
+const ringObj = {
+    diamondCut: '',
+    diamond: '',
+    design: '',
+    metal: '',
+    size: '',
+    font: '',
+    engravingText: '',
+    email: '',
+    firstName: '',
+    lastName: ''
+}
+
+{% for block in blocks %}
+    {% if block.type == 'ring_sizes' %}
+        ringObj.size = '{{ block.settings.size }}'
+
+        {% break %}
+    {% endif %}
+{% endfor %}
+
+function chooseRing(type, e) {
+    let target = e.target
+    let container = e.target
+    let val = ''
+    
+    if(target.nodeName != 'DIV') {
+        container = target.parentNode
+    }
+
+    if(target.nodeName != 'IMG' && target.nodeName != 'SELECT' && target.nodeName != 'INPUT') {
+        target = target.parentNode.querySelector('img')
+    }
+
+    if(target.nodeName == 'SELECT' || target.nodeName == 'INPUT') {
+        val = target.value
+    } else {
+        val = target.getAttribute('alt')
+        container.classList.toggle('border--black')
+        const allContainers = Array.prototype.slice.call(document.querySelectorAll('.' + type))
+
+        allContainers.map(function(el) {
+            if(el != container) {
+                el.classList.remove('border--black')
+            }
+        })
+    }
+
+    ringObj[type] = val
+}
+
+function submitRing(e) {
+    e.preventDefault()
+    const statusTitle = popupContainer.querySelector('h3')
+    let errors = false
+
+    popupContainer.classList.remove('hide')
+    statusTitle.innerHTML = '{{ success_message_title }}'
+
+    Object.keys(ringObj).map(function(key) {
+        const errorLabel = document.querySelector('.error-label-' + key)
+
+        if(!ringObj[key] && key != 'engravingText' && key != 'font') {
+            statusTitle.innerHTML = '{{ error_message_title }}'
+            if(errorLabel) {
+                errorLabel.classList.remove('hide')
+            }
+            errors = true
+        } else {
+            if(errorLabel) {
+                errorLabel.classList.add('hide')
+            }
+        }
+    })
+
+    if(!errors) {
+        let request = new XMLHttpRequest()
+        request.open('POST', 'https://nuitetlinette-forms-c7kbumhk4q-uc.a.run.app/email', true)
+        request.setRequestHeader('Content-Type', 'application/json')
+        request.onreadystatechange = () => {
+            if (request.readyState === 4) {
+                let {status, response, responseText} = request
+
+                if (status === 200) {
+                    statusTitle.innerHTML = '{{ success_message_title }}'
+                } else {
+                    statusTitle.innerHTML = '{{ error_message_title }}'
+                }
+            }
+        }
+        
+        request.send(JSON.stringify(ringObj))
+    }
+}
+
+function closePopup() {
+    document.querySelector('.ring-builder__popup-container').classList.add('hide')
+}
+
+document.querySelector('.ring-builder__popup-container').addEventListener('click', closePopup)
+</script>
+
+{% schema %}
+    {
+        "name": "Ring builder",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Title"
+            },
+            {
+                "type": "text",
+                "id": "page_title",
+                "label": "Page title"
+            },
+            {
+                "type": "text",
+                "id": "step_1_title",
+                "label": "Step 1 title"
+            },
+            {
+                "type": "text",
+                "id": "step_2_title",
+                "label": "Step 2 title"
+            },
+            {
+                "type": "text",
+                "id": "step_3_title",
+                "label": "Step 3 title"
+            },
+            {
+                "type": "text",
+                "id": "step_4_title",
+                "label": "Step 4 title"
+            },
+            {
+                "type": "text",
+                "id": "step_5_title",
+                "label": "Step 5 title"
+            },
+            {
+                "type": "text",
+                "id": "step_6_title",
+                "label": "Step 6 title"
+            },
+            {
+                "type": "header",
+                "content": "Step 5"
+            },
+            {
+                "type": "text",
+                "id": "ring_size_label",
+                "label": "Ring size label"
+            },
+            {
+                "type": "text",
+                "id": "font_label",
+                "label": "Font label"
+            },
+            {
+                "type": "text",
+                "id": "engraving_label",
+                "label": "Engraving label"
+            },
+            {
+                "type": "header",
+                "content": "Step 6"
+            },
+            {
+                "type": "text",
+                "id": "email_label",
+                "label": "email Label"
+            },
+            {
+                "type": "text",
+                "id": "name_label",
+                "label": "Name Label"
+            },
+            {
+                "type": "header",
+                "content": "Other"
+            },
+            {
+                "type": "text",
+                "id": "submit_btn",
+                "label": "Submit button",
+                "default": "SEND!"
+            },
+            {
+                "type": "text",
+                "id": "success_message_title",
+                "label": "Success message title",
+                "default": "Message is sent!"
+            },
+            {
+                "type": "text",
+                "id": "error_message_title",
+                "label": "Error message title",
+                "default": "There was an error, please check all fields again!"
+            },
+            {
+                "type": "text",
+                "id": "add_field_error_text",
+                "label": "'add field' error message",
+                "default": "Please choose one of the following:"
+            }
+        ],
+        "blocks":[
+            {
+                "type": "diamond_cut",
+                "name": "Diamond cut",
+                "settings":[
+                    {
+                        "type": "text",
+                        "id": "shape_type",
+                        "label": "Shape type"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "shape_img",
+                        "label": "Shape image"
+                    }
+                ]
+            },
+            {
+                "type": "diamond_options",
+                "name": "Diamond options",
+                "settings":[
+                    {
+                        "type": "text",
+                        "id": "diamond_option",
+                        "label": "Diamond option"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "diamon_option_img",
+                        "label": "Diamond option image"
+                    }
+                ]
+            },
+            {
+                "type": "design_options",
+                "name": "Design",
+                "settings":[
+                    {
+                        "type": "text",
+                        "id": "design",
+                        "label": "Design"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "design_img",
+                        "label": "Design image"
+                    }
+                ]
+            },
+            {
+                "type": "metal_options",
+                "name": "Metal",
+                "settings":[
+                    {
+                        "type": "text",
+                        "id": "metal",
+                        "label": "Type of metal"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "metal_img",
+                        "label": "Metal image"
+                    }
+                ]
+            },
+            {
+                "type": "ring_sizes",
+                "name": "Sizes",
+                "settings":[
+                    {
+                        "type": "text",
+                        "id": "size",
+                        "label": "Size"
+                    }
+                ]
+            },
+            {
+                "type": "font_options",
+                "name": "Fonts",
+                "settings":[
+                    {
+                        "type": "text",
+                        "id": "font",
+                        "label": "Font"
+                    }
+                ]
+            }
+        ]
+    }
+{% endschema %}
